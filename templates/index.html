@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080a0f">
+    <meta name="description" content="A cinematic workspace for scraping, exploring, and analyzing IMDb Top 250 movie data.">
+    <link rel="icon" href="data:,">
+    <title>IMDb Top 250 Studio | Cinema, considered</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-base: #080a0f;
+            --bg-surface: #10131a;
+            --bg-surface-elevated: #171a22;
+            --card-glass: rgba(18, 20, 27, 0.82);
+            --card-glass-hover: rgba(25, 27, 35, 0.95);
+            
+            --border-subtle: rgba(232, 226, 211, 0.09);
+            --border-hover: rgba(232, 226, 211, 0.2);
+            --border-accent: rgba(219, 190, 127, 0.36);
+            
+            --gold-primary: #e0c27d;
+            --gold-gradient: linear-gradient(135deg, #f0dca5 0%, #c4a15c 100%);
+            --gold-accent: #c9aa68;
+            --gold-subtle: rgba(224, 194, 125, 0.11);
+            --gold-shadow: rgba(198, 159, 83, 0.16);
+            
+            --sky-blue: #c6cbd2;
+            --rose-accent: #f43f5e;
+            --gold-podium: #d9bd79;
+            
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --content-width: 1380px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(ellipse at 12% 0%, rgba(201, 170, 104, 0.075) 0%, transparent 54%),
+                radial-gradient(ellipse at 88% 12%, rgba(63, 77, 103, 0.12) 0%, transparent 48%),
+                linear-gradient(180deg, #080a0f 0%, #0b0e14 55%, #080a0f 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 60px;
+        }
+
+        .hero-panel {
+            position: relative;
+            isolation: isolate;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 32px;
+            padding: clamp(28px, 5vw, 58px);
+            margin-bottom: 24px;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 85% 15%, rgba(204, 171, 102, 0.13), transparent 34%),
+                linear-gradient(125deg, rgba(24, 27, 36, 0.96), rgba(12, 15, 21, 0.92) 62%, rgba(24, 23, 21, 0.9));
+            border: 1px solid rgba(224, 194, 125, 0.17);
+            border-radius: 20px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+        }
+
+        .hero-panel::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 300px;
+            height: 300px;
+            right: 11%;
+            top: -205px;
+            border: 1px solid rgba(224, 194, 125, 0.16);
+            border-radius: 50%;
+            box-shadow: 0 0 0 28px rgba(224, 194, 125, 0.025), 0 0 0 58px rgba(224, 194, 125, 0.02);
+        }
+
+        .hero-copy {
+            max-width: 760px;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 18px;
+            color: var(--gold-primary);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .hero-kicker::before {
+            content: "";
+            width: 24px;
+            height: 1px;
+            background: var(--gold-primary);
+        }
+
+        .hero-copy h1 {
+            max-width: 700px;
+            color: #f7f4ed;
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 4.5rem);
+            font-weight: 600;
+            letter-spacing: -2px;
+            line-height: 1.02;
+        }
+
+        .hero-copy h1 span {
+            color: var(--gold-primary);
+        }
+
+        .hero-copy p {
+            max-width: 610px;
+            margin-top: 18px;
+            color: var(--text-secondary);
+            font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+            line-height: 1.75;
+        }
+
+        .hero-source {
+            display: grid;
+            gap: 8px;
+            min-width: 195px;
+            padding: 17px 19px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: var(--radius-md);
+            background: rgba(6, 8, 12, 0.38);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero-source span:first-child {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-source a {
+            color: #f4f1e9;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .hero-source a:hover {
+            color: var(--gold-primary);
+        }
+
+        .hero-source small {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* Glass Panel Container */
+        .glass-panel {
+            background: var(--card-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Navigation Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            background: rgba(8, 10, 16, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-badge {
+            background: var(--gold-gradient);
+            color: #070c12;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.05rem;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px var(--gold-shadow);
+        }
+
+        .brand-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-tag {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gold-primary);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(224, 194, 125, 0.25);
+            font-weight: 500;
+        }
+
+        /* Glass Buttons */
+        .glass-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 18px;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            outline: none;
+            border: 1px solid transparent;
+            user-select: none;
+        }
+
+        .glass-btn-primary {
+            background: var(--gold-gradient);
+            color: #070c12;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 16px var(--gold-shadow);
+        }
+
+        .glass-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(198, 159, 83, 0.25);
+        }
+
+        .glass-btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            color: var(--text-main);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .glass-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(224, 194, 125, 0.35);
+            color: var(--gold-primary);
+            transform: translateY(-1px);
+        }
+
+        .glass-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: none !important;
+        }
+
+        /* Container */
+        .container {
+            max-width: var(--content-width);
+            margin: 34px auto;
+            padding: 0 24px;
+        }
+
+        /* Control Deck Card */
+        .deck-card {
+            padding: 22px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .deck-info h2 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+
+        .deck-info p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            margin-top: 4px;
+            max-width: 640px;
+        }
+
+        .deck-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        /* Headless Toggle Switch */
+        .toggle-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+        }
+
+        .switch-toggle {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-rail {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.12);
+            transition: .25s;
+            border-radius: 20px;
+        }
+
+        .switch-rail:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            transition: .25s;
+            border-radius: 50%;
+        }
+
+        .switch-toggle input:checked + .switch-rail {
+            background: var(--gold-primary);
+            box-shadow: 0 0 10px var(--gold-shadow);
+        }
+
+        .switch-toggle input:checked + .switch-rail:before {
+            transform: translateX(18px);
+            background: #080a10;
+        }
+
+        /* Status & Audit Strip */
+        .status-strip {
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            border-left: 3px solid var(--gold-primary);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            box-shadow: 0 0 8px var(--gold-shadow);
+        }
+
+        .status-dot.active {
+            background: var(--gold-primary);
+            box-shadow: 0 0 10px var(--gold-shadow);
+        }
+
+        .status-meta {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* KPI Metrics Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .kpi-card {
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            border-color: var(--border-accent);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-val {
+            font-family: var(--font-display);
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .kpi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Main View Tabs */
+        .tabs-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 12px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 7px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #070c12;
+            background: var(--gold-primary);
+            box-shadow: 0 2px 10px var(--gold-shadow);
+        }
+
+        .view-toggle-wrap {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            padding: 3px;
+            border-radius: var(--radius-sm);
+        }
+
+        .view-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .view-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Filter & Search Toolbar */
+        .toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .toolbar-top {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .search-field {
+            position: relative;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-field i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 10px 14px 10px 40px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 12px var(--gold-subtle);
+        }
+
+        .sort-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .glass-select {
+            background: #121622;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .glass-select:focus {
+            border-color: var(--gold-primary);
+        }
+
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 5px 13px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .chip:hover {
+            color: #fff;
+            border-color: var(--border-hover);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .chip.active {
+            background: var(--gold-subtle);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            font-weight: 600;
+            box-shadow: 0 0 10px var(--gold-subtle);
+        }
+
+        .reset-filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--gold-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 6px;
+            text-decoration: underline;
+        }
+
+        /* VIEW A: POSTER MOVIE CARDS GRID */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .movie-card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            background: #10141f;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-accent);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), 0 0 16px rgba(201, 170, 104, 0.08);
+        }
+
+        /* Poster Frame with 2:3 Cinematic Ratio */
+        .poster-frame {
+            position: relative;
+            width: 100%;
+            height: 330px;
+            background: #080a10;
+            overflow: hidden;
+        }
+
+        .poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .movie-card:hover .poster-img {
+            transform: scale(1.03);
+        }
+
+        /* Editorial Fallback Poster Card */
+        .poster-fallback {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #141a28, #0a0e16);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .fallback-slate-icon {
+            font-size: 2.4rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .fallback-title {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        /* Corner Rank Floating Badge */
+        .rank-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            background: rgba(8, 10, 16, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .rank-tag.gold {
+            background: var(--gold-podium);
+            color: #0b0c10;
+            border: none;
+            font-weight: 800;
+            box-shadow: 0 0 10px rgba(245, 197, 24, 0.4);
+        }
+
+        .rank-tag.silver {
+            background: #cbd5e1;
+            color: #0b0c10;
+            border: none;
+            font-weight: 800;
+        }
+
+        .rank-tag.bronze {
+            background: #d97706;
+            color: #fff;
+            border: none;
+            font-weight: 800;
+        }
+
+        .year-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            background: rgba(8, 10, 16, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            z-index: 2;
+        }
+
+        .card-body {
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            gap: 12px;
+        }
+
+        .movie-name {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 42px;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+        }
+
+        .score-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-pill i {
+            color: var(--gold-primary);
+            font-size: 0.95rem;
+            text-shadow: 0 0 6px var(--gold-shadow);
+        }
+
+        .score-num {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .score-max {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .rating-bar-mini {
+            width: 65px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background: var(--gold-gradient);
+            border-radius: 10px;
+            box-shadow: 0 0 6px var(--gold-shadow);
+        }
+
+        .card-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 8px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: color 0.15s;
+        }
+
+        .copy-btn:hover {
+            color: var(--gold-primary);
+        }
+
+        /* VIEW B: DATA TABLE */
+        .table-wrap {
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table.studio-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        table.studio-table th {
+            background: #121622;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            text-transform: uppercase;
+            font-size: 0.76rem;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        table.studio-table th:hover {
+            color: var(--gold-primary);
+        }
+
+        table.studio-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        table.studio-table tr:hover td {
+            background: rgba(224, 194, 125, 0.035);
+        }
+
+        table.studio-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Tab Panes */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Visual Analytics Grid */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-box {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-img-frame {
+            background: #080a10;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            min-height: 270px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .chart-img-frame img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .chart-img-frame img:hover {
+            opacity: 0.95;
+        }
+
+        /* Empty / Loading States */
+        .empty-box {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            grid-column: 1 / -1;
+        }
+
+        .empty-box i {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--text-secondary);
+        }
+
+        /* Export Modal Dropdown */
+        .dropdown-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 110%;
+            background: #121622;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+            min-width: 210px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: var(--text-main);
+            padding: 10px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.86rem;
+            font-family: var(--font-display);
+            transition: background 0.15s;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--gold-primary);
+        }
+
+        .dropdown-menu.is-open .dropdown-content {
+            display: block;
+        }
+
+        /* Indeterminate Progress Spinner */
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #070c12;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notice */
+        #toastNotice {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #121622;
+            border: 1px solid var(--gold-primary);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            z-index: 999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            display: none;
+        }
+
+        #toastNotice[data-state="error"] {
+            border-color: rgba(227, 111, 111, 0.55);
+        }
+
+        .status-strip[data-state="failed"] .status-dot {
+            background: #e37b7b;
+            box-shadow: 0 0 8px rgba(227, 111, 111, 0.24);
+        }
+
+        .status-strip[data-state="completed"] {
+            border-left-color: var(--gold-primary);
+        }
+
+        .studio-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 46px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .studio-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .studio-footer a:hover {
+            color: var(--gold-primary);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .container {
+                padding: 0 16px;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            .deck-card {
+                padding: 18px;
+            }
+            .hero-panel {
+                grid-template-columns: 1fr;
+                gap: 22px;
+                padding: 30px 24px;
+            }
+            .hero-source {
+                width: min(100%, 280px);
+            }
+            .container {
+                margin-top: 20px;
+            }
+            .sort-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            .glass-select {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                align-items: stretch;
+            }
+            .brand-title {
+                font-size: 1.05rem;
+                flex-wrap: wrap;
+            }
+            .header-actions,
+            .header-actions .dropdown-menu,
+            .header-actions .glass-btn {
+                width: 100%;
+            }
+            .hero-copy h1 {
+                letter-spacing: -1px;
+            }
+            .deck-actions,
+            .deck-actions .glass-btn {
+                width: 100%;
+            }
+            .toggle-box {
+                justify-content: space-between;
+            }
+            .status-strip {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .studio-footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+            .kpi-card {
+                padding: 16px;
+            }
+            .kpi-val {
+                font-size: 1.7rem;
+            }
+            .tabs-nav {
+                align-items: stretch;
+            }
+            .tab-buttons {
+                width: 100%;
+                overflow-x: auto;
+            }
+            .tab-btn {
+                white-space: nowrap;
+                padding: 7px 11px;
+            }
+            .view-toggle-wrap {
+                justify-content: center;
+            }
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+                gap: 12px;
+            }
+            .poster-frame {
+                height: 260px;
+            }
+            .card-body {
+                padding: 13px;
+            }
+            #toastNotice {
+                left: 14px;
+                right: 14px;
+                bottom: 14px;
+                text-align: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="brand-area">
+            <span class="brand-badge"><i class="fa-solid fa-clapperboard"></i> IMDb</span>
+            <div class="brand-title">
+                Top 250 Studio <span class="brand-tag">DATA STUDIO</span>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <!-- Export CSV Dropdown -->
+            <div class="dropdown-menu">
+                <button class="glass-btn glass-btn-secondary" id="exportBtn" type="button" aria-expanded="false" aria-controls="exportMenu">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Export CSV <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;"></i>
+                </button>
+                <div class="dropdown-content" id="exportMenu">
+                    <a href="/api/export/csv?scope=all" data-export-scope="all" onclick="triggerExport(event, 'all')">
+                        <i class="fa-solid fa-table"></i> Full Catalog
+                    </a>
+                    <a href="/api/export/csv?scope=filtered" data-export-scope="filtered" onclick="triggerExport(event, 'filtered')">
+                        <i class="fa-solid fa-filter"></i> Current Filtered View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="hero-panel" aria-labelledby="heroTitle">
+            <div class="hero-copy">
+                <span class="hero-kicker">A considered view of cinema</span>
+                <h1 id="heroTitle">Great stories.<br><span>Enduring scores.</span></h1>
+                <p>Scrape the IMDb Top 250, explore the collected ratings, and follow the shape of a remarkable film canon in one focused workspace.</p>
+            </div>
+            <div class="hero-source">
+                <span>Source chart</span>
+                <a href="https://www.imdb.com/chart/top/" target="_blank" rel="noopener noreferrer">IMDb Top 250 <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                <small>Updated from IMDb when you scrape</small>
+            </div>
+        </section>
+
+        <!-- Control Deck Card -->
+        <div class="glass-panel deck-card">
+            <div class="deck-info">
+                <h2><i class="fa-solid fa-film" style="color: var(--gold-primary);"></i> Scraping & Data Analysis Console</h2>
+                <p>Dynamically crawls IMDb Top 250 movies using Selenium WebDriver, parses DOM & JSON-LD structured schemas, verifies rating integrity with Pandas, and builds visual trend analytics.</p>
+            </div>
+            <div class="deck-actions">
+                <div class="toggle-box">
+                    <span>Headless Mode</span>
+                    <label class="switch-toggle">
+                        <input type="checkbox" id="headlessSwitch" checked>
+                        <span class="switch-rail"></span>
+                    </label>
+                </div>
+                <button class="glass-btn glass-btn-primary" id="startScrapeBtn" onclick="initiateScraping()">
+                    <i class="fa-solid fa-play"></i> Start Scraping Session
+                </button>
+            </div>
+        </div>
+
+        <!-- Status & Audit Strip -->
+        <div class="glass-panel status-strip" id="statusStrip" data-state="idle" role="status" aria-live="polite">
+            <div class="status-left">
+                <div class="status-dot" id="liveDot"></div>
+                <span id="liveStatusMsg">System idle. Ready to extract live IMDb data.</span>
+            </div>
+            <div class="status-meta" id="lastScrapedMeta">
+                <i class="fa-regular fa-clock"></i> Last Scraped: Loading...
+            </div>
+        </div>
+
+        <!-- KPI Metrics Grid -->
+        <div class="kpi-grid">
+            <div class="glass-panel kpi-card">
+                <div class="kpi-label">
+                    <span>Total Movies</span>
+                    <i class="fa-solid fa-layer-group" style="color: var(--gold-primary);"></i>
+                </div>
+                <div class="kpi-val" id="metricTotal">0</div>
+                <div class="kpi-sub" id="metricDataQuality">Records validated</div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-label">
+                    <span>Average Rating</span>
+                    <i class="fa-solid fa-star-half-stroke" style="color: var(--gold-primary);"></i>
+                </div>
+                <div class="kpi-val" id="metricAvg">0.00</div>
+                <div class="kpi-sub">Overall catalog mean</div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-label">
+                    <span>Highest Rated</span>
+                    <i class="fa-solid fa-trophy" style="color: var(--gold-podium);"></i>
+                </div>
+                <div class="kpi-val" id="metricHigh">0.0</div>
+                <div class="kpi-sub" id="metricHighTitle" title="Highest rated title">N/A</div>
+            </div>
+            <div class="glass-panel kpi-card">
+                <div class="kpi-label">
+                    <span>Lowest Rating</span>
+                    <i class="fa-solid fa-arrow-down-wide-short" style="color: var(--sky-blue);"></i>
+                </div>
+                <div class="kpi-val" id="metricLow">0.0</div>
+                <div class="kpi-sub" id="metricLowTitle" title="Lowest rated title">N/A</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-nav">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="navigateTab('showcaseTab', this)">
+                    <i class="fa-solid fa-grip"></i> Movie Catalog
+                </button>
+                <button class="tab-btn" onclick="navigateTab('analyticsTab', this)">
+                    <i class="fa-solid fa-chart-pie"></i> Visual Analytics
+                </button>
+                <button class="tab-btn" onclick="navigateTab('historyTab', this)">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Session History
+                </button>
+            </div>
+
+            <!-- Card vs Table view toggler -->
+            <div class="view-toggle-wrap" id="viewToggleBar">
+                <button class="view-btn active" id="btnGridMode" onclick="setViewMode('grid')">
+                    <i class="fa-solid fa-table-cells-large"></i> Poster Cards
+                </button>
+                <button class="view-btn" id="btnTableMode" onclick="setViewMode('table')">
+                    <i class="fa-solid fa-table-list"></i> Data Table
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: MOVIE CATALOG -->
+        <div id="showcaseTab" class="tab-pane active">
+            <!-- Filter Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-top">
+                    <div class="search-field">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" id="searchBox" placeholder="Search by title, year (e.g. 1994, Dark Knight)..." oninput="applyFilters()">
+                    </div>
+                    <div class="sort-actions">
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Sort:</span>
+                        <select class="glass-select" id="sortSelect" onchange="applyFilters()">
+                            <option value="rank-asc">Rank: #1 to #250</option>
+                            <option value="rank-desc">Rank: #250 to #1</option>
+                            <option value="rating-desc">Rating: Highest First</option>
+                            <option value="rating-asc">Rating: Lowest First</option>
+                            <option value="year-desc">Year: Newest First</option>
+                            <option value="year-asc">Year: Oldest First</option>
+                            <option value="title-asc">Title: A to Z</option>
+                        </select>
+                        <span style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono);" id="countIndicator">Showing 0</span>
+                    </div>
+                </div>
+
+                <div class="chip-group">
+                    <span class="chip active" data-filter="all" onclick="selectChip('all', this)">All Movies</span>
+                    <span class="chip" data-filter="top10" onclick="selectChip('top10', this)">🏆 Top 10 Elite</span>
+                    <span class="chip" data-filter="rating9" onclick="selectChip('rating9', this)">⭐ 9.0+ Masterpieces</span>
+                    <span class="chip" data-filter="modern" onclick="selectChip('modern', this)">🚀 2010s & Newer</span>
+                    <span class="chip" data-filter="classics" onclick="selectChip('classics', this)">🎞️ Golden Classics (&lt;1980)</span>
+                    <button class="reset-filter-btn" id="resetBtn" style="display: none;" onclick="resetAllFilters()">Reset Filters</button>
+                </div>
+            </div>
+
+            <!-- MODE 1: POSTER CARDS GRID -->
+            <div id="cardsGridWrap" class="movies-grid">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- MODE 2: DATA TABLE -->
+            <div id="tableDataWrap" class="table-wrap" style="display: none;">
+                <div class="table-scroll">
+                    <table class="studio-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 90px;" onclick="setSortFromHeader('rank')">Rank <i class="fa-solid fa-sort" style="font-size: 0.7rem;"></i></th>
+                                <th onclick="setSortFromHeader('title')">Movie Title <i class="fa-solid fa-sort" style="font-size: 0.7rem;"></i></th>
+                                <th style="width: 130px;" onclick="setSortFromHeader('year')">Release Year <i class="fa-solid fa-sort" style="font-size: 0.7rem;"></i></th>
+                                <th style="width: 160px;" onclick="setSortFromHeader('rating')">IMDb Score <i class="fa-solid fa-sort" style="font-size: 0.7rem;"></i></th>
+                                <th style="width: 200px;">Scraped Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movieTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-box">
+                                    <i class="fa-solid fa-spinner fa-spin"></i>
+                                    Loading movie catalog...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: VISUAL ANALYTICS -->
+        <div id="analyticsTab" class="tab-pane">
+            <div class="charts-container">
+                <div class="glass-panel chart-box">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-chart-column" style="color: var(--gold-primary);"></i> Rating Distribution Histogram</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">10 Bins &amp; Mean</span>
+                    </div>
+                    <div class="chart-img-frame">
+                        <img id="chartImgDist" src="" alt="Rating Distribution" style="display:none;" onclick="openPreview(this.src)">
+                        <div id="emptyDist" class="empty-box">
+                            <i class="fa-solid fa-chart-simple"></i>
+                            Scrape data to generate distribution chart.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel chart-box">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-calendar-days" style="color: var(--gold-primary);"></i> Movies by Release Decade</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">1920s to Present</span>
+                    </div>
+                    <div class="chart-img-frame">
+                        <img id="chartImgDecade" src="" alt="Movies by Decade" style="display:none;" onclick="openPreview(this.src)">
+                        <div id="emptyDecade" class="empty-box">
+                            <i class="fa-solid fa-chart-bar"></i>
+                            Scrape data to generate decade analysis chart.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel chart-box" style="grid-column: 1 / -1;">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-crown" style="color: var(--gold-primary);"></i> Top 10 Highest Rated Movies Benchmark</h3>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Hall of Fame</span>
+                    </div>
+                    <div class="chart-img-frame" style="min-height: 380px;">
+                        <img id="chartImgTop10" src="" alt="Top 10 Movies" style="display:none;" onclick="openPreview(this.src)">
+                        <div id="emptyTop10" class="empty-box">
+                            <i class="fa-solid fa-trophy"></i>
+                            Scrape data to generate Top 10 comparison chart.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SESSION HISTORY -->
+        <div id="historyTab" class="tab-pane">
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="studio-table">
+                        <thead>
+                            <tr>
+                                <th>Scrape Execution Session</th>
+                                <th>Records Stored</th>
+                                <th>Session Mean Score</th>
+                                <th>Top Ranked Movie</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="4" class="empty-box">
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                    No historical scrape runs logged yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer class="studio-footer">
+            <span>IMDb Top 250 Studio · An independent movie-data project</span>
+            <a href="https://www.imdb.com/chart/top/" target="_blank" rel="noopener noreferrer">IMDb Top 250 source <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+        </footer>
+
+    </div>
+
+    <!-- Toast Notice -->
+    <div id="toastNotice"></div>
+
+    <script>
+        let catalog = [];
+        let activeFilter = 'all';
+        let activeViewMode = 'grid';
+        let isScrapingActive = false;
+        let pollTimer = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const exportMenu = document.querySelector('.dropdown-menu');
+            const exportButton = document.getElementById('exportBtn');
+            exportButton.addEventListener('click', () => {
+                const isOpen = exportMenu.classList.toggle('is-open');
+                exportButton.setAttribute('aria-expanded', String(isOpen));
+            });
+            document.addEventListener('click', event => {
+                if (!exportMenu.contains(event.target)) {
+                    exportMenu.classList.remove('is-open');
+                    exportButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') {
+                    exportMenu.classList.remove('is-open');
+                    exportButton.setAttribute('aria-expanded', 'false');
+                    exportButton.focus();
+                }
+            });
+            loadApplicationData();
+        });
+
+        function navigateTab(tabId, triggerBtn) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            triggerBtn.classList.add('active');
+
+            const viewToggle = document.getElementById('viewToggleBar');
+            viewToggle.style.display = (tabId === 'showcaseTab') ? 'flex' : 'none';
+        }
+
+        function setViewMode(mode) {
+            activeViewMode = mode;
+            const btnGrid = document.getElementById('btnGridMode');
+            const btnTable = document.getElementById('btnTableMode');
+            const gridWrap = document.getElementById('cardsGridWrap');
+            const tableWrap = document.getElementById('tableDataWrap');
+
+            if (mode === 'grid') {
+                btnGrid.classList.add('active');
+                btnTable.classList.remove('active');
+                gridWrap.style.display = 'grid';
+                tableWrap.style.display = 'none';
+            } else {
+                btnTable.classList.add('active');
+                btnGrid.classList.remove('active');
+                gridWrap.style.display = 'none';
+                tableWrap.style.display = 'block';
+            }
+        }
+
+        function selectChip(filterType, element) {
+            activeFilter = filterType;
+            document.querySelectorAll('.chip-group .chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            applyFilters();
+        }
+
+        function resetAllFilters() {
+            document.getElementById('searchBox').value = '';
+            document.getElementById('sortSelect').value = 'rank-asc';
+            activeFilter = 'all';
+            document.querySelectorAll('.chip-group .chip').forEach(c => {
+                c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
+            });
+            applyFilters();
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function updateStatus(message, state = 'idle') {
+            document.getElementById('liveStatusMsg').innerText = message;
+            document.getElementById('statusStrip').dataset.state = state;
+            document.getElementById('liveDot').classList.toggle('active', state === 'scraping');
+        }
+
+        async function loadApplicationData(preserveStatus = false) {
+            try {
+                const res = await fetch('/api/data');
+                if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+                const data = await res.json();
+                catalog = Array.isArray(data.movies) ? data.movies : [];
+                renderKPIs(data.stats, data.last_scraped);
+                applyFilters();
+                renderAnalytics(data.charts);
+                renderHistoryTable(data.history);
+                if (!preserveStatus) {
+                    updateStatus(
+                        catalog.length
+                            ? `Saved dataset ready: ${catalog.length} IMDb movies loaded.`
+                            : 'No saved dataset yet. Start a scrape to collect live IMDb data.',
+                        'idle'
+                    );
+                }
+                return true;
+            } catch (err) {
+                console.error("Failed to load application data:", err);
+                updateStatus(`Unable to load saved movie data: ${err.message}`, 'failed');
+                notify(`Unable to load movie data: ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        function applyFilters() {
+            const query = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+            const sortVal = document.getElementById('sortSelect').value;
+
+            const isFiltered = query.length > 0 || activeFilter !== 'all';
+            document.getElementById('resetBtn').style.display = isFiltered ? 'inline-block' : 'none';
+
+            let filtered = catalog.filter(m => {
+                const matchesQuery = !query || 
+                    m.Title.toLowerCase().includes(query) ||
+                    (m.Year && m.Year.toString().includes(query)) ||
+                    (m.Rank && m.Rank.toString() === query);
+
+                if (!matchesQuery) return false;
+
+                if (activeFilter === 'top10') return m.Rank <= 10;
+                if (activeFilter === 'rating9') return (m.Rating || 0) >= 9.0;
+                if (activeFilter === 'modern') return (m.Year || 0) >= 2010;
+                if (activeFilter === 'classics') return (m.Year || 0) < 1980 && (m.Year || 0) > 0;
+
+                return true;
+            });
+
+            // Sorting
+            filtered.sort((a, b) => {
+                switch (sortVal) {
+                    case 'rank-asc': return a.Rank - b.Rank;
+                    case 'rank-desc': return b.Rank - a.Rank;
+                    case 'rating-desc': return (b.Rating || 0) - (a.Rating || 0);
+                    case 'rating-asc': return (a.Rating || 0) - (b.Rating || 0);
+                    case 'year-desc': return (b.Year || 0) - (a.Year || 0);
+                    case 'year-asc': return (a.Year || 0) - (b.Year || 0);
+                    case 'title-asc': return a.Title.localeCompare(b.Title);
+                    default: return a.Rank - b.Rank;
+                }
+            });
+
+            document.getElementById('countIndicator').innerText = `Showing ${filtered.length} of ${catalog.length}`;
+            renderCardsGrid(filtered);
+            renderDataTable(filtered);
+        }
+
+        function setSortFromHeader(column) {
+            const select = document.getElementById('sortSelect');
+            if (column === 'rank') {
+                select.value = select.value === 'rank-asc' ? 'rank-desc' : 'rank-asc';
+            } else if (column === 'rating') {
+                select.value = select.value === 'rating-desc' ? 'rating-asc' : 'rating-desc';
+            } else if (column === 'year') {
+                select.value = select.value === 'year-desc' ? 'year-asc' : 'year-desc';
+            } else if (column === 'title') {
+                select.value = 'title-asc';
+            }
+            applyFilters();
+        }
+
+        function renderCardsGrid(movies) {
+            const container = document.getElementById('cardsGridWrap');
+            if (!movies || movies.length === 0) {
+                container.innerHTML = catalog.length
+                    ? `<div class="empty-box">
+                           <i class="fa-solid fa-magnifying-glass"></i>
+                           No movies matching your criteria.
+                           <br><button class="glass-btn glass-btn-secondary" style="margin-top: 12px;" onclick="resetAllFilters()">Reset All Filters</button>
+                       </div>`
+                    : `<div class="empty-box">
+                           <i class="fa-solid fa-clapperboard"></i>
+                           Your collection is ready when you are.
+                           <br><span style="color: var(--text-muted);">Start a scrape to load real IMDb chart data.</span>
+                       </div>`;
+                return;
+            }
+
+            container.innerHTML = movies.map(m => {
+                let rankClass = '';
+                let rankIcon = '';
+
+                if (m.Rank === 1) {
+                    rankClass = 'gold';
+                    rankIcon = '<i class="fa-solid fa-crown" style="font-size: 0.72rem;"></i>';
+                } else if (m.Rank === 2) {
+                    rankClass = 'silver';
+                    rankIcon = '<i class="fa-solid fa-medal" style="font-size: 0.72rem;"></i>';
+                } else if (m.Rank === 3) {
+                    rankClass = 'bronze';
+                    rankIcon = '<i class="fa-solid fa-award" style="font-size: 0.72rem;"></i>';
+                }
+
+                const title = escapeHtml(m.Title || '');
+                const posterUrl = typeof m.Poster_Url === 'string' ? m.Poster_Url : '';
+                const hasPoster = /^https:\/\//i.test(posterUrl);
+                const hasRating = Number.isFinite(Number(m.Rating)) && Number(m.Rating) > 0;
+                const score = hasRating ? Number(m.Rating).toFixed(1) : 'N/A';
+                const percent = hasRating ? Math.min(100, Math.max(0, ((Number(m.Rating) - 7.5) / 2.5) * 100)) : 0;
+                const year = m.Year || 'N/A';
+                const summary = escapeHtml(`#${m.Rank} ${m.Title || ''} (${year}) ★ ${score}`);
+
+                return `
+                    <div class="movie-card">
+                        <div class="poster-frame">
+                            <span class="rank-tag ${rankClass}">${rankIcon} #${m.Rank}</span>
+                            <span class="year-tag">${escapeHtml(year)}</span>
+                            
+                            ${hasPoster ? `
+                                <img class="poster-img" src="${escapeHtml(posterUrl)}" alt="${title}" loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            ` : ''}
+
+                            <div class="poster-fallback" style="${hasPoster ? '' : 'display: flex;'}">
+                                <i class="fa-solid fa-clapperboard fallback-slate-icon"></i>
+                                <div class="fallback-title">${title}</div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="movie-name" title="${title}">${title}</h4>
+
+                            <div class="rating-row">
+                                <div class="score-pill">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span class="score-num">${score}</span>
+                                    <span class="score-max">/10</span>
+                                </div>
+                                <div class="rating-bar-mini">
+                                    <div class="rating-bar-fill" style="width: ${percent}%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="card-foot">
+                                <span><i class="fa-regular fa-calendar"></i> ${escapeHtml(year)}</span>
+                                <button class="copy-btn" data-summary="${summary}" onclick="copyMovie(this.dataset.summary)" title="Copy movie summary">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderDataTable(movies) {
+            const tbody = document.getElementById('movieTableBody');
+            if (!movies || movies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-box">No movies found matching current filters.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = movies.map(m => `
+                <tr>
+                    <td>
+                        <span class="rank-tag ${m.Rank === 1 ? 'gold' : (m.Rank === 2 ? 'silver' : (m.Rank === 3 ? 'bronze' : ''))}" style="position: static; padding: 2px 7px;">
+                            #${m.Rank}
+                        </span>
+                    </td>
+                    <td style="font-weight: 600; color: #fff;">${escapeHtml(m.Title || '')}</td>
+                    <td style="font-family: var(--font-mono); color: var(--text-secondary);">${escapeHtml(m.Year || 'N/A')}</td>
+                    <td>
+                        <span style="color: var(--gold-primary); font-weight: 700; font-family: var(--font-mono); display: inline-flex; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-star"></i> ${Number(m.Rating) > 0 ? Number(m.Rating).toFixed(1) : 'N/A'}
+                        </span>
+                    </td>
+                    <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(m.Scraped_At || 'N/A')}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderKPIs(stats, lastScraped) {
+            if (!stats) return;
+            document.getElementById('metricTotal').innerText = stats.total_movies || 0;
+            document.getElementById('metricAvg').innerText = (stats.average_rating || 0).toFixed(2);
+            document.getElementById('metricHigh').innerText = (stats.highest_rating || 0).toFixed(1);
+            document.getElementById('metricHighTitle').innerText = stats.highest_rated_movie || 'N/A';
+            document.getElementById('metricLow').innerText = (stats.lowest_rating || 0).toFixed(1);
+            document.getElementById('metricLowTitle').innerText = stats.lowest_rated_movie || 'N/A';
+
+            if (stats.data_quality) {
+                document.getElementById('metricDataQuality').innerText = 
+                    `${stats.data_quality.cleaned_records_count || stats.total_movies} valid (${stats.data_quality.duplicates_removed || 0} duplicates dropped)`;
+            }
+
+            if (lastScraped) {
+                document.getElementById('lastScrapedMeta').innerHTML = `<i class="fa-regular fa-clock"></i> Last Scraped: ${lastScraped}`;
+            }
+        }
+
+        function renderAnalytics(charts) {
+            if (!charts) return;
+            const timeTag = '?v=' + new Date().getTime();
+
+            if (charts.rating_distribution) {
+                const el = document.getElementById('chartImgDist');
+                el.src = charts.rating_distribution + timeTag;
+                el.style.display = 'block';
+                document.getElementById('emptyDist').style.display = 'none';
+            }
+            if (charts.movies_by_decade) {
+                const el = document.getElementById('chartImgDecade');
+                el.src = charts.movies_by_decade + timeTag;
+                el.style.display = 'block';
+                document.getElementById('emptyDecade').style.display = 'none';
+            }
+            if (charts.top_10_movies) {
+                const el = document.getElementById('chartImgTop10');
+                el.src = charts.top_10_movies + timeTag;
+                el.style.display = 'block';
+                document.getElementById('emptyTop10').style.display = 'none';
+            }
+        }
+
+        function renderHistoryTable(history) {
+            const tbody = document.getElementById('historyTableBody');
+            if (!history || history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-box">No historical scrape sessions recorded yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = history.map(h => `
+                <tr>
+                    <td style="font-family: var(--font-mono);">${escapeHtml(h.timestamp)}</td>
+                    <td><strong>${h.total_records}</strong> movies</td>
+                    <td><span style="color: var(--gold-primary); font-weight: 700; font-family: var(--font-mono);">★ ${Number(h.avg_rating).toFixed(2)}</span></td>
+                    <td style="color: var(--text-secondary);">${escapeHtml(h.top_movie)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function initiateScraping() {
+            if (isScrapingActive) return;
+            isScrapingActive = true;
+
+            const btn = document.getElementById('startScrapeBtn');
+            const dot = document.getElementById('liveDot');
+            const headless = document.getElementById('headlessSwitch').checked;
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> Scraping...`;
+            dot.classList.add('active');
+
+            updateStatus(`Launching Chrome WebDriver (Headless=${headless})...`, 'scraping');
+
+            try {
+                const res = await fetch('/api/scrape', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ headless: headless })
+                });
+                const data = await res.json();
+                if (data.status === 'error' && data.message?.includes('already in progress')) {
+                    updateStatus('A scrape is already running. Connecting to its live progress…', 'scraping');
+                    pollTimer = setInterval(pollScrapeStatus, 1500);
+                    return;
+                }
+                if (!res.ok || data.status !== 'started') {
+                    throw new Error(data.message || `Server responded with ${res.status}`);
+                }
+                pollTimer = setInterval(pollScrapeStatus, 1500);
+            } catch (err) {
+                updateStatus(`Unable to start scraping: ${err.message}`, 'failed');
+                notify(`Unable to start scraping: ${err.message}`, 'error');
+                finishScrapeState();
+            }
+        }
+
+        async function pollScrapeStatus() {
+            try {
+                const res = await fetch('/api/status');
+                if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+                const data = await res.json();
+
+                updateStatus(data.message, data.status);
+
+                if (data.status === 'completed') {
+                    clearInterval(pollTimer);
+                    finishScrapeState();
+                    const loaded = await loadApplicationData(true);
+                    if (loaded) {
+                        updateStatus(data.message, 'completed');
+                        notify('Scraping completed. The saved IMDb dataset has been refreshed.');
+                    }
+                } else if (data.status === 'failed') {
+                    clearInterval(pollTimer);
+                    notify(`Scraping failed: ${data.message}`, 'error');
+                    finishScrapeState();
+                }
+            } catch (err) {
+                console.error("Polling error:", err);
+                updateStatus(`Lost contact with the scraper status endpoint: ${err.message}`, 'failed');
+            }
+        }
+
+        function finishScrapeState() {
+            isScrapingActive = false;
+            const btn = document.getElementById('startScrapeBtn');
+            const dot = document.getElementById('liveDot');
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-play"></i> Start Scraping Session`;
+            dot.classList.remove('active');
+        }
+
+        async function triggerExport(event, scope) {
+            event.preventDefault();
+            const menu = document.querySelector('.dropdown-menu');
+            const exportButton = document.getElementById('exportBtn');
+            menu.classList.remove('is-open');
+            exportButton.setAttribute('aria-expanded', 'false');
+
+            const link = event.currentTarget;
+            link.setAttribute('aria-disabled', 'true');
+            try {
+                const params = new URLSearchParams({ scope });
+                if (scope === 'filtered') {
+                    params.set('query', document.getElementById('searchBox').value || '');
+                    params.set('chip', activeFilter);
+                    params.set('sort_by', document.getElementById('sortSelect').value);
+                }
+
+                const response = await fetch(`/api/export/csv?${params.toString()}`);
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok || !contentType.includes('text/csv')) {
+                    const message = await response.text();
+                    throw new Error(message || `CSV export failed (HTTP ${response.status}).`);
+                }
+
+                const disposition = response.headers.get('content-disposition') || '';
+                const filenameMatch = disposition.match(/filename="?([^";]+)"?/i);
+                const filename = filenameMatch ? filenameMatch[1] : `imdb_top_250_${scope}.csv`;
+                const objectUrl = URL.createObjectURL(await response.blob());
+                const downloadLink = document.createElement('a');
+                downloadLink.href = objectUrl;
+                downloadLink.download = filename;
+                downloadLink.hidden = true;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                downloadLink.remove();
+                window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+                notify(scope === 'filtered' ? 'Filtered movie CSV downloaded.' : 'Full movie CSV downloaded.');
+            } catch (err) {
+                console.error('CSV export failed:', err);
+                notify(`CSV export failed: ${err.message}`, 'error');
+            } finally {
+                link.removeAttribute('aria-disabled');
+            }
+        }
+
+        async function copyMovie(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                notify('Movie summary copied to clipboard.');
+            } catch (err) {
+                notify(`Could not copy movie summary: ${err.message}`, 'error');
+            }
+        }
+
+        function notify(msg, state = 'success') {
+            const toast = document.getElementById('toastNotice');
+            toast.innerText = msg;
+            toast.dataset.state = state;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function openPreview(src) {
+            window.open(src, '_blank');
+        }
+    </script>
+</body>
+</html>
